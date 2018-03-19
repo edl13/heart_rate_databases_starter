@@ -1,3 +1,4 @@
+import numpy as np
 from pymodm import connect
 import models
 import datetime
@@ -33,12 +34,24 @@ def post_hr_data():
 def get_hr_data(user_email):
     '''Gets HR list from Mongo database
 
-    :params user_email: Route variable'''
+    :params user_email: Route variable of user email (primary ID)'''
 
     user = models.User.objects.raw({'_id': user_email}).first()
     heart_rate_list = user.heart_rate
     print(heart_rate_list)
     return jsonify({'heart_rate': heart_rate_list})
+
+@app.route('/api/heart_rate/average/<user_email>', methods=['GET'])
+def get_avg_hr(user_email):
+    '''Gets average HR of user
+
+    :params user_email: Route variable of user email (primary ID)'''
+
+    user = models.User.objects.raw({'_id': user_email}).first()
+    heart_rate_list = user.heart_rate
+    mean = np.asscalar(np.mean(heart_rate_list))
+    return jsonify({'Mean_HR': mean})
+
 
 def add_heart_rate(email, heart_rate, time):
     user = models.User.objects.raw({"_id": email}).first()
