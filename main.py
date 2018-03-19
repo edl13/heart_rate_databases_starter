@@ -41,6 +41,7 @@ def get_hr_data(user_email):
     print(heart_rate_list)
     return jsonify({'heart_rate': heart_rate_list})
 
+
 @app.route('/api/heart_rate/average/<user_email>', methods=['GET'])
 def get_avg_hr(user_email):
     '''Gets average HR of user
@@ -49,8 +50,16 @@ def get_avg_hr(user_email):
 
     user = models.User.objects.raw({'_id': user_email}).first()
     heart_rate_list = user.heart_rate
-    mean = np.asscalar(np.mean(heart_rate_list))
+    mean = mean_hr(heart_rate_list)
     return jsonify({'Mean_HR': mean})
+
+
+def mean_hr(hr_list):
+    '''Averages list of HRs
+
+    :params hr_list: List of heart rates'''
+
+    return np.asscalar(np.mean(hr_list))
 
 
 def add_heart_rate(email, heart_rate, time):
