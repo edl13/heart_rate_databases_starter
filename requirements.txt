@@ -2,3 +2,4 @@ pymodm
 flask
 numpy
 pytest
+pytest-pep8
