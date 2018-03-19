@@ -1,5 +1,5 @@
 import pytest
-import numpy
+
 
 def test_mean():
     from main import mean_hr
