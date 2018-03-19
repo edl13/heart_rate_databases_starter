@@ -29,6 +29,17 @@ def post_hr_data():
     return response
 
 
+@app.route('/api/heart_rate/<user_email>', methods=['GET'])
+def get_hr_data(user_email):
+    '''Gets HR list from Mongo database
+
+    :params user_email: Route variable'''
+
+    user = models.User.objects.raw({'_id': user_email}).first()
+    heart_rate_list = user.heart_rate
+    print(heart_rate_list)
+    return jsonify({'heart_rate': heart_rate_list})
+
 def add_heart_rate(email, heart_rate, time):
     user = models.User.objects.raw({"_id": email}).first()
     user.heart_rate.append(heart_rate)
