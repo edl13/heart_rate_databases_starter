@@ -74,7 +74,7 @@ def mean_hr(hr_list):
     return np.asscalar(np.mean(hr_list))
 
 
-def hr_mean_since(hr_list, t_list, t):
+def hr_mean_since(hr_list, t_list, t_since_str):
     '''Average of list of HRs since time
 
     :params hr_list: List of heart rates
@@ -82,23 +82,37 @@ def hr_mean_since(hr_list, t_list, t):
     :params t: Beginning time to start average (unix epoch time)
     :return mean: Mean HR since time t'''
 
-    selected_list = [hr_list[i] for (i, t_i) in enumerate(t_list) if t >= t]
+    t_int_list = [dt.timestamp() for dt in t_list]
+    since_dt = parse_time_str(t_since_str)
+    t_int = since_dt.timestamp()
+    selected_list = [hr_list[i] for (i, t_i) in
+                     enumerate(t_int_list) if t_i >= t_int]
     mean = mean_hr(selected_list)
     return mean
+
+
+def parse_time_str(t_str):
+    '''Parse time string into datetime object
+
+    :params t_str: Time string of format 2018-03-09 11:00:36.372339
+    '''
+
+    format_str = '%Y-%d-%m %H:%M:%S.%f'
+    dt = datetime.datetime.strptime(t_str, format_str)
+    return dt
 
 
 def add_heart_rate(email, heart_rate, time):
     user = models.User.objects.raw({"_id": email}).first()
     user.heart_rate.append(heart_rate)
-    time_str = time.timestamp()
-    user.heart_rate_times.append(time_str)
+    user.heart_rate_times.append(time)
     user.save()
 
 
 def create_user(email, age, heart_rate, time):
     u = models.User(email, age, [], [])
     u.heart_rate.append(heart_rate)
-    u.heart_rate_times.append(datetime.datetime.now())
+    u.heart_rate_times.append(time)
     u.save()
 
 
@@ -107,11 +121,3 @@ def print_user(email):
     print(user.email)
     print(user.heart_rate)
     print(user.heart_rate_times)
-
-
-if __name__ == "__main__":
-    connect("mongodb://localhost:27017/heart_rate_app")
-    create_user(email="edl13@duke.edu", age=21, heart_rate=60,
-                time=datetime.datetime.now())
-    add_heart_rate("edl13@duke.edu", 68, datetime.datetime.now())
-    print_user("edl13@duke.edu")
