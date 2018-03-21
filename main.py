@@ -51,21 +51,47 @@ def get_avg_hr(user_email):
     user = models.User.objects.raw({'_id': user_email}).first()
     heart_rate_list = user.heart_rate
     mean = mean_hr(heart_rate_list)
+    return jsonify({'Mean_HR': mean, 'times': user.heart_rate_times})
+
+
+@app.route('/api/heart_rate/interval_average', methods=['POST'])
+def get_interval_avg_hr():
+    json = request.get_json()
+    email = json['email']
+    user = models.User.objects.raw({'_id': email}).first()
+    heart_rate_list = user.heart_rate
+    time_list = user.heart_rate_times
+    time_since = json['heart_rate_average_since']
+    mean = hr_mean_since(heart_rate_list, time_list, time_since)
     return jsonify({'Mean_HR': mean})
 
 
 def mean_hr(hr_list):
-    '''Averages list of HRs
+    '''Averages of list of HRs
 
     :params hr_list: List of heart rates'''
 
     return np.asscalar(np.mean(hr_list))
 
 
+def hr_mean_since(hr_list, t_list, t):
+    '''Average of list of HRs since time
+
+    :params hr_list: List of heart rates
+    :params t_list: List of timestamps (unix epoch times)
+    :params t: Beginning time to start average (unix epoch time)
+    :return mean: Mean HR since time t'''
+
+    selected_list = [hr_list[i] for (i, t_i) in enumerate(t_list) if t >= t]
+    mean = mean_hr(selected_list)
+    return mean
+
+
 def add_heart_rate(email, heart_rate, time):
     user = models.User.objects.raw({"_id": email}).first()
     user.heart_rate.append(heart_rate)
-    user.heart_rate_times.append(time)
+    time_str = time.timestamp()
+    user.heart_rate_times.append(time_str)
     user.save()
 
 
