@@ -12,7 +12,7 @@ def test_parse_time_str():
     from main import parse_time_str
     time_str = "2018-03-09 11:00:36.372339"
     dt = parse_time_str(time_str)
-    assert dt.timestamp() == pytest.approx(1535986836.372339)
+    assert dt.second == 36
 
 
 def test_mean_since():
