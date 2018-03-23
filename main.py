@@ -94,7 +94,8 @@ def validate_user_json(json):
             'heart_rate': {
                 'type': 'number'
             }
-        }
+        },
+        'required': ['user_email', 'heart_rate']
     }
 
     jsonschema.validate(json, schema,
@@ -118,7 +119,8 @@ def validate_hr_post_json(json):
                 'type': 'string',
                 'pattern': '\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.\d{6}'
             }
-        }
+        },
+        'required': ['user_email', 'heart_rate_average_since']
     }
 
     jsonschema.validate(json, schema,
@@ -154,56 +156,6 @@ def check_tachy(hr, age):
         return True
     else:
         return False
-
-
-def validate_user_json(json):
-    '''Validates new user jsons
-
-    :params json: JSON object from POST
-    '''
-
-    schema = {
-        'type': 'object',
-        'properties': {
-            'user_email': {
-                'type': 'string',
-                'format': 'email'
-            },
-            'user_age': {
-                'type': 'number'
-            },
-            'heart_rate': {
-                'type': 'number'
-            }
-        }
-    }
-
-    jsonschema.validate(json, schema,
-                        format_checker=jsonschema.FormatChecker())
-
-
-def validate_hr_post_json(json):
-    '''Validates heart rate since JSONs
-
-    :params json: JSON object from POST
-    '''
-
-    schema = {
-        'type': 'object',
-        'properties': {
-            'user_email': {
-                'type': 'string',
-                'format': 'email'
-            },
-            'heart_rate_average_since': {
-                'type': 'string',
-                'pattern': '\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.\d{6}'
-            }
-        }
-    }
-
-    jsonschema.validate(json, schema,
-                        format_checker=jsonschema.FormatChecker())
 
 
 def mean_hr(hr_list):
