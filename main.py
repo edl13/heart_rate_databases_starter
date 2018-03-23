@@ -17,7 +17,7 @@ def post_hr_data():
 
     :params json: JSON string with email, name, heart rate, and timestamp'''
     json = request.get_json()
-    email = json['email']
+    email = json['user_email']
 
     response = ''
 
@@ -65,7 +65,7 @@ def get_interval_avg_hr():
 
     validate_hr_post_json(json)
 
-    email = json['email']
+    email = json['user_email']
     user = models.User.objects.raw({'_id': email}).first()
     age = user.age
     heart_rate_list = user.heart_rate
