@@ -72,3 +72,13 @@ def test_json_validation():
 
     with pytest.raises(jsonschema.ValidationError):
         validate_hr_post_json(json)
+
+
+def test_tachy():
+    from main import check_tachy
+    age = [12, 1, 7, 15]
+    hr = [112, 200, 90, 120]
+    result = [False, True, False, True]
+
+    for i, age in enumerate(age):
+        assert check_tachy(hr[i], age) == result[i]

@@ -67,11 +67,93 @@ def get_interval_avg_hr():
 
     email = json['email']
     user = models.User.objects.raw({'_id': email}).first()
+    age = user.age
     heart_rate_list = user.heart_rate
     time_list = user.heart_rate_times
     time_since = json['heart_rate_average_since']
     mean = hr_mean_since(heart_rate_list, time_list, time_since)
-    return jsonify({'Mean_HR': mean})
+    return jsonify({'Mean_HR': mean, 'Tachycardia': check_tachy(mean, age)})
+
+
+def validate_user_json(json):
+    '''Validates new user jsons
+
+    :params json: JSON object from POST
+    '''
+
+    schema = {
+        'type': 'object',
+        'properties': {
+            'user_email': {
+                'type': 'string',
+                'format': 'email'
+            },
+            'user_age': {
+                'type': 'number'
+            },
+            'heart_rate': {
+                'type': 'number'
+            }
+        }
+    }
+
+    jsonschema.validate(json, schema,
+                        format_checker=jsonschema.FormatChecker())
+
+
+def validate_hr_post_json(json):
+    '''Validates heart rate since JSONs
+
+    :params json: JSON object from POST
+    '''
+
+    schema = {
+        'type': 'object',
+        'properties': {
+            'user_email': {
+                'type': 'string',
+                'format': 'email'
+            },
+            'heart_rate_average_since': {
+                'type': 'string',
+                'pattern': '\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.\d{6}'
+            }
+        }
+    }
+
+    jsonschema.validate(json, schema,
+                        format_checker=jsonschema.FormatChecker())
+
+
+def check_tachy(hr, age):
+    '''Returns true or false for tachycardia depending on age and heartrate,
+    according to https://en.wikipedia.org/wiki/Tachycardia
+
+    :params hr: Heart rate
+    :params age: Age of user
+    '''
+
+    thresh = 0
+
+    if age <= 1:
+        thresh = 159
+    elif age <= 2:
+        thresh = 151
+    elif age <= 4:
+        thresh = 137
+    elif age <= 7:
+        thresh = 133
+    elif age <= 11:
+        thresh = 130
+    elif age <= 15:
+        thresh = 119
+    else:
+        thresh = 100
+
+    if hr > thresh:
+        return True
+    else:
+        return False
 
 
 def validate_user_json(json):
