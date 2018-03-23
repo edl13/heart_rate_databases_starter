@@ -9,6 +9,7 @@ app = Flask(__name__)
 
 connect("mongodb://vcm-3582.vm.duke.edu:27017/heart_rate_app")
 
+
 @app.route('/api/heart_rate', methods=['POST'])
 def post_hr_data():
     '''Posts HR data to Mongo database. If user exists, appends HR and
