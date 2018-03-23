@@ -56,6 +56,13 @@ def test_json_validation():
     with pytest.raises(jsonschema.ValidationError):
         validate_user_json(json)
 
+    json = {
+        "user_email": "edl13@duke.edu",
+    }
+
+    with pytest.raises(jsonschema.ValidationError):
+        validate_user_json(json)
+
     from main import validate_hr_post_json
 
     json = {
@@ -67,6 +74,13 @@ def test_json_validation():
 
     json = {
         'user_email': 'edl13@duke.edu',
+        'heart_rate_average_since': '2018-03-09 11:00.372339'
+    }
+
+    with pytest.raises(jsonschema.ValidationError):
+        validate_hr_post_json(json)
+
+    json = {
         'heart_rate_average_since': '2018-03-09 11:00.372339'
     }
 

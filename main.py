@@ -94,7 +94,8 @@ def validate_user_json(json):
             'heart_rate': {
                 'type': 'number'
             }
-        }
+        },
+        'required': ['user_email', 'heart_rate']
     }
 
     jsonschema.validate(json, schema,
@@ -118,7 +119,8 @@ def validate_hr_post_json(json):
                 'type': 'string',
                 'pattern': '\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.\d{6}'
             }
-        }
+        },
+        'required': ['user_email', 'heart_rate_average_since']
     }
 
     jsonschema.validate(json, schema,
