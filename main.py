@@ -7,7 +7,7 @@ from flask import Flask, jsonify, request
 from pymodm.errors import DoesNotExist
 app = Flask(__name__)
 
-connect("mongodb://vcm-3582.vm.duke.edu:27017/heart_rate_app")
+connect("mongodb://localhost:27017/heart_rate_app")
 
 
 @app.route('/api/heart_rate', methods=['POST'])
