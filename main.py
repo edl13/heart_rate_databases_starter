@@ -49,7 +49,7 @@ def get_hr_data(user_email):
 
     try:
         user = models.User.objects.raw({'_id': user_email}).first()
-    except models.DoesNotExist:
+    except DoesNotExist:
         logging.exception('User email does not exist')
         return 'User does not exist', 400
 
@@ -64,7 +64,12 @@ def get_avg_hr(user_email):
 
     :params user_email: Route variable of user email (primary ID)'''
 
-    user = models.User.objects.raw({'_id': user_email}).first()
+    try:
+        user = models.User.objects.raw({'_id': user_email}).first()
+    except DoesNotExist:
+        logging.exception('User email does not exist')
+        return 'User does not exist', 400
+
     heart_rate_list = user.heart_rate
     mean = mean_hr(heart_rate_list)
     return jsonify({'Mean_HR': mean, 'times': user.heart_rate_times}), 200
@@ -83,7 +88,13 @@ def get_interval_avg_hr():
         return 'Incorrectly formatted JSON', 400
 
     email = json['user_email']
-    user = models.User.objects.raw({'_id': email}).first()
+
+    try:
+        user = models.User.objects.raw({'_id': email}).first()
+    except DoesNotExist:
+        logging.exception('User does not exist')
+        return 'User does not exist', 400
+
     age = user.age
     heart_rate_list = user.heart_rate
     time_list = user.heart_rate_times
