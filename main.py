@@ -64,7 +64,12 @@ def get_avg_hr(user_email):
 
     :params user_email: Route variable of user email (primary ID)'''
 
-    user = models.User.objects.raw({'_id': user_email}).first()
+    try:
+        user = models.User.objects.raw({'_id': user_email}).first()
+    except models.DoesNotExist:
+        logging.exception('User email does not exist')
+        return 'User does not exist', 400
+
     heart_rate_list = user.heart_rate
     mean = mean_hr(heart_rate_list)
     return jsonify({'Mean_HR': mean, 'times': user.heart_rate_times}), 200
