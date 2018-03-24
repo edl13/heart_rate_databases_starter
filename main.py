@@ -189,7 +189,7 @@ def parse_time_str(t_str):
     :params t_str: Time string of format 2018-03-09 11:00:36.372339
     '''
 
-    format_str = '%Y-%d-%m %H:%M:%S.%f'
+    format_str = '%Y-%m-%d %H:%M:%S.%f'
     dt = datetime.datetime.strptime(t_str, format_str)
     return dt
 
