@@ -5,9 +5,13 @@ import models
 import datetime
 from flask import Flask, jsonify, request
 from pymodm.errors import DoesNotExist
+import logging
+
 app = Flask(__name__)
 
 connect("mongodb://vcm-3582.vm.duke.edu:27017/heart_rate_app")
+
+logging.basicConfig(filename='debug.log', level=logging.DEBUG)
 
 
 @app.route('/api/heart_rate', methods=['POST'])
@@ -21,7 +25,11 @@ def post_hr_data():
 
     response = ''
 
-    validate_user_json(json)
+    try:
+        validate_user_json(json)
+    except jsonschema.exceptions.ValidationError:
+        logging.exception('JSON validation error')
+        return 'Incorrectly formatted JSON', 400
 
     try:
         add_heart_rate(email, json['heart_rate'], datetime.datetime.now())
@@ -30,7 +38,7 @@ def post_hr_data():
         create_user(email, json['age'], json['heart_rate'],
                     datetime.datetime.now())
         response = 'Created new user {}'.format(email)
-    return response
+    return response, 200
 
 
 @app.route('/api/heart_rate/<user_email>', methods=['GET'])
@@ -42,7 +50,7 @@ def get_hr_data(user_email):
     user = models.User.objects.raw({'_id': user_email}).first()
     heart_rate_list = user.heart_rate
     print(heart_rate_list)
-    return jsonify({'heart_rate': heart_rate_list})
+    return jsonify({'heart_rate': heart_rate_list}), 200
 
 
 @app.route('/api/heart_rate/average/<user_email>', methods=['GET'])
@@ -54,7 +62,7 @@ def get_avg_hr(user_email):
     user = models.User.objects.raw({'_id': user_email}).first()
     heart_rate_list = user.heart_rate
     mean = mean_hr(heart_rate_list)
-    return jsonify({'Mean_HR': mean, 'times': user.heart_rate_times})
+    return jsonify({'Mean_HR': mean, 'times': user.heart_rate_times}), 200
 
 
 @app.route('/api/heart_rate/interval_average', methods=['POST'])
@@ -63,7 +71,11 @@ def get_interval_avg_hr():
 
     json = request.get_json()
 
-    validate_hr_post_json(json)
+    try:
+        validate_hr_post_json(json)
+    except jsonschema.exceptions.ValidationError:
+        logging.exception('JSON validation error')
+        return 'Incorrectly formatted JSON', 400
 
     email = json['user_email']
     user = models.User.objects.raw({'_id': email}).first()
@@ -72,7 +84,8 @@ def get_interval_avg_hr():
     time_list = user.heart_rate_times
     time_since = json['heart_rate_average_since']
     mean = hr_mean_since(heart_rate_list, time_list, time_since)
-    return jsonify({'Mean_HR': mean, 'Tachycardia': check_tachy(mean, age)})
+    return jsonify({'Mean_HR': mean,
+                    'Tachycardia': check_tachy(mean, age)}), 200
 
 
 def validate_user_json(json):
