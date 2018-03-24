@@ -22,7 +22,7 @@ def test_mean_since():
                datetime.datetime(2009, 1, 22), datetime.datetime(2010, 5, 12),
                datetime.datetime(2018, 4, 18)]
     hr_list = [55, 66, 70, 55, 100]
-    t = '2008-24-12 01:23:33.000231'
+    t = '2008-12-24 01:23:33.000231'
 
     assert hr_mean_since(hr_list, dt_list, t)
 
