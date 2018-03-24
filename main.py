@@ -47,7 +47,12 @@ def get_hr_data(user_email):
 
     :params user_email: Route variable of user email (primary ID)'''
 
-    user = models.User.objects.raw({'_id': user_email}).first()
+    try:
+        user = models.User.objects.raw({'_id': user_email}).first()
+    except models.DoesNotExist:
+        logging.exception('User email does not exist')
+        return 'User does not exist', 400
+
     heart_rate_list = user.heart_rate
     print(heart_rate_list)
     return jsonify({'heart_rate': heart_rate_list}), 200
