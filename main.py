@@ -6,10 +6,12 @@ import datetime
 from flask import Flask, jsonify, request
 from pymodm.errors import DoesNotExist
 import logging
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
-connect("mongodb://vcm-3582.vm.duke.edu:27017/heart_rate_app")
+connect("mongodb://localhost:27017/heart_rate_app")
 
 logging.basicConfig(filename='debug.log', level=logging.DEBUG)
 
