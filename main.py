@@ -6,10 +6,12 @@ import datetime
 from flask import Flask, jsonify, request
 from pymodm.errors import DoesNotExist
 import logging
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
-connect("mongodb://vcm-3582.vm.duke.edu:27017/heart_rate_app")
+connect("mongodb://localhost:27017/heart_rate_app")
 
 logging.basicConfig(filename='debug.log', level=logging.DEBUG)
 
@@ -54,8 +56,10 @@ def get_hr_data(user_email):
         return 'User does not exist', 400
 
     heart_rate_list = user.heart_rate
+    times = user.heart_rate_times
     print(heart_rate_list)
-    return jsonify({'heart_rate': heart_rate_list}), 200
+    return jsonify({'heart_rate': heart_rate_list,
+                    'heart_rate_times': times}), 200
 
 
 @app.route('/api/heart_rate/average/<user_email>', methods=['GET'])
