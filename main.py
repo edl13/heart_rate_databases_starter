@@ -56,8 +56,10 @@ def get_hr_data(user_email):
         return 'User does not exist', 400
 
     heart_rate_list = user.heart_rate
+    times = user.heart_rate_times
     print(heart_rate_list)
-    return jsonify({'heart_rate': heart_rate_list}), 200
+    return jsonify({'heart_rate': heart_rate_list,
+                    'heart_rate_times': times}), 200
 
 
 @app.route('/api/heart_rate/average/<user_email>', methods=['GET'])
